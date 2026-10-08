@@ -39,6 +39,8 @@
   .size-row{display:flex; gap:6px; align-items:center; margin-bottom:5px;}
   .size-row input{flex:1; border:1px solid var(--line); border-radius:8px; padding:6px 8px; font-family:inherit; font-size:.78rem; background:#fff;}
   .size-row input.size-price{flex:1.1; text-align:center;}
+  .size-row input.size-qty{flex:1.1; text-align:center; background:#fff7e6 !important; border-color:var(--gold) !important;}
+  .qty-note{font-size:.65rem; color:var(--muted); margin:-2px 0 6px; padding:0 2px;}
   .size-row button{border:none; background:#fdeaea; color:#c0392b; border-radius:8px; padding:5px 7px; cursor:pointer; font-size:.78rem;}
   .addSize{width:100%; padding:6px; border:1px dashed var(--gold); background:#fffdf7; color:var(--navy); border-radius:8px; font-family:inherit; font-weight:700; cursor:pointer; font-size:.72rem;}
   .prod-top{display:flex; gap:8px; margin-bottom:6px;}
@@ -304,9 +306,11 @@ function renderCatalog(){
               <div class="size-row">
                 <input value="${sz.size||''}" placeholder="سایز (مثلاً ۲ متر)" onchange="updateCatalogSize(${ci},${ii},${si},'size',this.value)">
                 <input class="size-price" type="number" value="${sz.price||''}" placeholder="قیمت" onchange="updateCatalogSize(${ci},${ii},${si},'price',this.value)">
+                <input class="size-qty" value="${sz.qty||''}" placeholder="مقدار جنس مصرفی" onchange="updateCatalogSize(${ci},${ii},${si},'qty',this.value)">
                 <button onclick="removeCatalogSize(${ci},${ii},${si})">✕</button>
               </div>
             `).join('')}
+            <div class="qty-note">🔒 ستون زرد (مقدار جنس مصرفی) فقط تو پنل مدیریت دیده میشه، تو سایت عمومی نمایش داده نمیشه</div>
             <button class="addSize" onclick="addCatalogSize(${ci},${ii})">+ افزودن ردیف سایز/قیمت</button>
           </div>
           <div class="thumbs" id="thumbs-${ci}-${ii}">
@@ -332,7 +336,7 @@ window.removeCatalogCategory = (ci) => { if(confirm('این دسته حذف بش
 window.addCatalogItem = (ci) => { catalogState[ci].items.push({n:'محصول جدید', d:'', desc:'', imgs:[], sizes:[]}); renderCatalog(); };
 window.addCatalogSize = (ci, ii) => {
   if(!catalogState[ci].items[ii].sizes) catalogState[ci].items[ii].sizes = [];
-  catalogState[ci].items[ii].sizes.push({size:'', price:''});
+  catalogState[ci].items[ii].sizes.push({size:'', price:'', qty:''});
   renderCatalog();
 };
 window.updateCatalogSize = (ci, ii, si, field, val) => {
