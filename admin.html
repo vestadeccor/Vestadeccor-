@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>پنل مدیریت | وستا دکور</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{ --navy:#0d1b3d; --gold:#d4a94f; --gold-light:#e8c874; --paper:#f7f5f0; --text:#1a1a2e; --muted:#6b7280; --line:#e5e0d5; --green:#1e8e5a; }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:'Vazirmatn',sans-serif; background:var(--paper); color:var(--text); padding-bottom:60px;}
+  .wrap{max-width:680px; margin:0 auto; padding:14px 10px;}
+  h1{color:var(--navy); font-size:1.15rem; text-align:center; margin-bottom:14px;}
+  .lock{text-align:center; padding:70px 20px 20px;}
+  .lock input{width:100%; max-width:260px; padding:12px 16px; border-radius:12px; border:1px solid var(--line); background:#fff; color:var(--text); font-family:inherit; font-size:1rem; text-align:center; margin:14px 0;}
+  .lock button{padding:11px 30px; border:none; border-radius:12px; font-family:inherit; font-weight:700; color:#fff; background:var(--navy); cursor:pointer; font-size:.95rem;}
+  .err{color:#c0392b; font-size:.82rem; min-height:20px; margin-top:4px;}
+  .hidden{display:none;}
+  .maintabs{display:flex; gap:6px; background:#fff; border:1px solid var(--line); border-radius:12px; padding:4px; margin-bottom:14px;}
+  .mtab{flex:1; text-align:center; padding:9px 6px; border-radius:9px; cursor:pointer; font-weight:800; color:var(--muted); font-size:.85rem;}
+  .mtab.active{background:var(--gold); color:var(--navy);}
+  .tabs{display:flex; gap:6px; background:#fff; border:1px solid var(--line); border-radius:12px; padding:4px; margin-bottom:14px;}
+  .tab{flex:1; text-align:center; padding:9px 6px; border-radius:9px; cursor:pointer; font-weight:700; color:var(--muted); font-size:.85rem;}
+  .tab.active{background:var(--navy); color:var(--gold-light);}
+  .cat{background:#fff; border:1px solid var(--line); border-radius:12px; margin-bottom:12px; overflow:hidden;}
+  .cat-head{background:var(--navy); color:#fff; font-weight:700; font-size:.88rem; padding:9px 12px; display:flex; justify-content:space-between; align-items:center;}
+  .cat-head input{background:transparent; border:none; color:#fff; font-family:inherit; font-weight:700; font-size:.88rem; width:60%;}
+  .row{display:flex; align-items:center; gap:8px; padding:8px 10px; border-bottom:1px solid var(--line);}
+  .row:last-child{border-bottom:none;}
+  .row input, .row textarea{border:1px solid var(--line); border-radius:8px; padding:7px 8px; font-family:inherit; font-size:.8rem; background:#fbfaf7;}
+  .row .n{flex:2; min-width:0;}
+  .row .d{flex:1.3; min-width:0;}
+  .row .p{flex:1.2; min-width:0; text-align:center;}
+  .row button{border:none; background:#fdeaea; color:#c0392b; border-radius:8px; padding:6px 8px; cursor:pointer; font-size:.85rem;}
+  .prod-block{padding:10px; border-bottom:1px solid var(--line);}
+  .prod-block:last-child{border-bottom:none;}
+  .sizes-wrap{background:#fbfaf7; border:1px solid var(--line); border-radius:10px; padding:8px; margin-bottom:6px;}
+  .sizes-label{font-size:.72rem; font-weight:800; color:var(--navy); margin-bottom:6px;}
+  .size-row{display:flex; gap:6px; align-items:center; margin-bottom:5px;}
+  .size-row input{flex:1; border:1px solid var(--line); border-radius:8px; padding:6px 8px; font-family:inherit; font-size:.78rem; background:#fff;}
+  .size-row input.size-price{flex:1.1; text-align:center;}
+  .size-row button{border:none; background:#fdeaea; color:#c0392b; border-radius:8px; padding:5px 7px; cursor:pointer; font-size:.78rem;}
+  .addSize{width:100%; padding:6px; border:1px dashed var(--gold); background:#fffdf7; color:var(--navy); border-radius:8px; font-family:inherit; font-weight:700; cursor:pointer; font-size:.72rem;}
+  .prod-top{display:flex; gap:8px; margin-bottom:6px;}
+  .prod-top input{flex:1;}
+  .prod-desc{width:100%; margin-bottom:6px; min-height:44px; resize:vertical;}
+  .thumbs{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:6px;}
+  .thumb{position:relative; width:56px; height:56px; border-radius:8px; overflow:hidden; border:1px solid var(--line);}
+  .thumb img{width:100%; height:100%; object-fit:cover; display:block;}
+  .thumb button{position:absolute; top:0; left:0; background:rgba(192,57,43,.9); color:#fff; border:none; width:18px; height:18px; font-size:.6rem; cursor:pointer; border-radius:0 0 6px 0;}
+  .upload-btn{display:inline-block; padding:6px 10px; border:1px dashed var(--gold); border-radius:8px; font-size:.75rem; color:var(--navy); cursor:pointer; background:#fffdf7;}
+  .upload-btn input{display:none;}
+  .addItem, .addCat{width:100%; padding:9px; border:1px dashed var(--gold); background:#fffdf7; color:var(--navy); border-radius:10px; font-family:inherit; font-weight:700; cursor:pointer; margin-top:4px; font-size:.82rem;}
+  .move-btns{display:flex; flex-direction:column; gap:2px;}
+  .move-btns button{border:1px solid var(--line); background:#fff; color:var(--navy); border-radius:6px; width:22px; height:20px; font-size:.65rem; cursor:pointer; line-height:1; padding:0;}
+  .move-btns button:disabled{opacity:.3; cursor:default;}
+  .cat-head .move-btns button{border-color:rgba(255,255,255,.3); background:rgba(255,255,255,.1); color:#fff;}
+  .toolbar{display:flex; gap:8px; margin:16px 0;}
+  .toolbar button{flex:1; padding:13px; border:none; border-radius:12px; font-family:inherit; font-weight:800; cursor:pointer; font-size:.9rem;}
+  .save-btn{background:var(--green); color:#fff;}
+  .seed-btn{background:#fff; color:var(--navy); border:1px solid var(--line) !important;}
+  .status{text-align:center; font-size:.85rem; margin-top:8px; min-height:20px; font-weight:700;}
+  .status.ok{color:var(--green);}
+  .status.err{color:#c0392b;}
+  .hint{background:#fff; border:1px solid var(--line); border-radius:12px; padding:12px; font-size:.78rem; color:var(--muted); margin-bottom:14px; line-height:1.9;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>پنل مدیریت وستا دکور</h1>
+
+  <div id="lockScreen" class="lock">
+    <div style="font-weight:800; font-size:1.1rem; color:var(--navy);">🔒 ورود مدیر</div>
+    <input type="password" id="adminPw" placeholder="رمز عبور">
+    <div class="err" id="adminErr"></div>
+    <button onclick="checkAdminPw()">ورود</button>
+  </div>
+
+  <div id="panel" class="hidden">
+
+    <div class="maintabs">
+      <div class="mtab active" id="mtabPrice" onclick="switchMain('price')">قیمت‌ها</div>
+      <div class="mtab" id="mtabCatalog" onclick="switchMain('catalog')">کاتالوگ</div>
+    </div>
+
+    <!-- ===== PRICE SECTION ===== -->
+    <div id="priceSection">
+      <div class="hint">
+        قیمت‌ها رو تغییر بده و روی «ذخیره تغییرات» بزن. تغییرات فوراً روی سایت اصلی نمایش داده میشه.
+        برای اضافه/حذف کردن محصول یا دسته از دکمه‌های مربوطه استفاده کن.
+      </div>
+      <div class="tabs">
+        <div class="tab active" id="tabRetail" onclick="switchTab('retail')">لیست مصرف‌کننده</div>
+        <div class="tab" id="tabPartner" onclick="switchTab('partner')">لیست همکاران</div>
+      </div>
+      <div id="editorArea"></div>
+      <button class="addCat" onclick="addCategory()">+ افزودن دسته جدید</button>
+      <div class="toolbar">
+        <button class="save-btn" onclick="saveData()">ذخیره تغییرات</button>
+        <button class="seed-btn" onclick="seedIfEmpty()">بارگذاری اولیه نمونه</button>
+      </div>
+      <div class="status" id="statusMsg"></div>
+    </div>
+
+    <!-- ===== CATALOG SECTION ===== -->
+    <div id="catalogSection" class="hidden">
+      <div class="hint">
+        محصولات کاتالوگ (بدون قیمت) رو اینجا مدیریت کن. برای هر محصول می‌تونی چند عکس آپلود کنی.
+        تغییرات با دکمه «ذخیره کاتالوگ» ذخیره میشه.
+      </div>
+      <div id="catalogEditorArea"></div>
+      <button class="addCat" onclick="addCatalogCategory()">+ افزودن دسته جدید</button>
+      <div class="toolbar">
+        <button class="save-btn" onclick="saveCatalog()">ذخیره کاتالوگ</button>
+      </div>
+      <div class="status" id="catalogStatusMsg"></div>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const SUPABASE_URL = "https://nptrvsxapqgizmqderku.supabase.co";
+const SUPABASE_KEY = "sb_publishable_p3FDPQ8r20qMuIO3eOqF_Q_ZchbiXG3";
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const ADMIN_PASSWORD = "vesta-admin-1404"; // این رمز رو همینجا عوض کن
+
+const CLOUD_NAME = "qs4blsin";
+const UPLOAD_PRESET = "jm9omnli";
+
+// ---------- LOGIN ----------
+window.checkAdminPw = function(){
+  const val = document.getElementById('adminPw').value;
+  if(val === ADMIN_PASSWORD){
+    document.getElementById('lockScreen').classList.add('hidden');
+    document.getElementById('panel').classList.remove('hidden');
+    loadPriceData();
+    loadCatalogData();
+  } else {
+    document.getElementById('adminErr').textContent = 'رمز اشتباه است';
+  }
+};
+document.getElementById('adminPw').addEventListener('keyup', e => { if(e.key==='Enter') checkAdminPw(); });
+
+window.switchMain = function(which){
+  document.getElementById('mtabPrice').classList.toggle('active', which==='price');
+  document.getElementById('mtabCatalog').classList.toggle('active', which==='catalog');
+  document.getElementById('priceSection').classList.toggle('hidden', which!=='price');
+  document.getElementById('catalogSection').classList.toggle('hidden', which!=='catalog');
+};
+
+// ================= PRICE LIST (unchanged logic) =================
+const seedRetail = [
+  { cat:"دیوارپوش", items:[
+    {n:"دیوارپوش فومی ساده", d:"70×70 - 70×77", p:305000},
+    {n:"دیوارپوش فومی چاپی", d:"70×70 - 70×77", p:325000},
+  ]},
+];
+
+let state = { retail: [], partner: [] };
+let activeTab = 'retail';
+
+async function loadPriceData(){
+  for(const tab of ['retail','partner']){
+    const { data } = await supabase.from('price_lists').select('categories').eq('id',tab).single();
+    state[tab] = (data && data.categories) || [];
+  }
+  renderPrice();
+}
+
+function renderPrice(){
+  const data = state[activeTab];
+  const area = document.getElementById('editorArea');
+  if(!data.length){
+    area.innerHTML = '<div class="hint">داده‌ای وجود نداره. برای شروع سریع روی «بارگذاری اولیه نمونه» بزن یا دسته جدید اضافه کن.</div>';
+    return;
+  }
+  area.innerHTML = data.map((sec, ci) => `
+    <div class="cat">
+      <div class="cat-head">
+        <input value="${sec.cat}" onchange="updateCatName(${ci}, this.value)">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <div class="move-btns">
+            <button onclick="moveCategory(${ci},-1)" ${ci===0?'disabled':''}>▲</button>
+            <button onclick="moveCategory(${ci},1)" ${ci===data.length-1?'disabled':''}>▼</button>
+          </div>
+          <button onclick="removeCategory(${ci})" style="background:rgba(255,255,255,.15); color:#fff; border:none; border-radius:8px; padding:5px 8px; cursor:pointer;">حذف دسته</button>
+        </div>
+      </div>
+      ${sec.items.map((it, ii) => `
+        <div class="row">
+          <input class="n" value="${it.n}" placeholder="نام محصول" onchange="updateItem(${ci},${ii},'n',this.value)">
+          <input class="d" value="${it.d||''}" placeholder="سایز" onchange="updateItem(${ci},${ii},'d',this.value)">
+          <input class="p" type="number" value="${it.p}" placeholder="قیمت" onchange="updateItem(${ci},${ii},'p',this.value)">
+          <div class="move-btns">
+            <button onclick="moveItem(${ci},${ii},-1)" ${ii===0?'disabled':''}>▲</button>
+            <button onclick="moveItem(${ci},${ii},1)" ${ii===sec.items.length-1?'disabled':''}>▼</button>
+          </div>
+          <button onclick="removeItem(${ci},${ii})">✕</button>
+        </div>
+      `).join('')}
+      <button class="addItem" onclick="addItem(${ci})">+ افزودن محصول</button>
+    </div>
+  `).join('');
+}
+
+window.switchTab = function(tab){
+  activeTab = tab;
+  document.getElementById('tabRetail').classList.toggle('active', tab==='retail');
+  document.getElementById('tabPartner').classList.toggle('active', tab==='partner');
+  document.getElementById('statusMsg').textContent = '';
+  renderPrice();
+};
+
+window.updateCatName = (ci, val) => { state[activeTab][ci].cat = val; };
+window.updateItem = (ci, ii, field, val) => {
+  state[activeTab][ci].items[ii][field] = field==='p' ? Number(val) : val;
+};
+window.removeItem = (ci, ii) => { state[activeTab][ci].items.splice(ii,1); renderPrice(); };
+window.removeCategory = (ci) => { if(confirm('این دسته حذف بشه؟')){ state[activeTab].splice(ci,1); renderPrice(); } };
+window.addItem = (ci) => { state[activeTab][ci].items.push({n:'محصول جدید', d:'', p:0}); renderPrice(); };
+window.addCategory = () => { state[activeTab].push({cat:'دسته جدید', items:[{n:'محصول جدید', d:'', p:0}]}); renderPrice(); };
+window.moveCategory = (ci, dir) => {
+  const arr = state[activeTab];
+  const ni = ci + dir;
+  if(ni < 0 || ni >= arr.length) return;
+  [arr[ci], arr[ni]] = [arr[ni], arr[ci]];
+  renderPrice();
+};
+window.moveItem = (ci, ii, dir) => {
+  const items = state[activeTab][ci].items;
+  const ni = ii + dir;
+  if(ni < 0 || ni >= items.length) return;
+  [items[ii], items[ni]] = [items[ni], items[ii]];
+  renderPrice();
+};
+
+window.saveData = async function(){
+  const statusEl = document.getElementById('statusMsg');
+  statusEl.textContent = 'در حال ذخیره...'; statusEl.className='status';
+  try{
+    const { error } = await supabase.from('price_lists').update({ categories: state[activeTab], updated_at: new Date().toISOString() }).eq('id', activeTab);
+    if(error) throw error;
+    statusEl.textContent = 'ذخیره شد ✓'; statusEl.className='status ok';
+  }catch(e){
+    statusEl.textContent = 'خطا در ذخیره: ' + e.message; statusEl.className='status err';
+  }
+};
+
+window.seedIfEmpty = async function(){
+  if(state[activeTab].length){
+    if(!confirm('داده فعلی این تب پاک و با نمونه اولیه جایگزین بشه؟')) return;
+  }
+  state[activeTab] = JSON.parse(JSON.stringify(seedRetail));
+  renderPrice();
+  await saveData();
+};
+
+// ================= CATALOG (new) =================
+let catalogState = [];
+
+async function loadCatalogData(){
+  const { data } = await supabase.from('catalog_products').select('categories').eq('id','main').single();
+  catalogState = (data && data.categories) || [];
+  renderCatalog();
+}
+
+function renderCatalog(){
+  const area = document.getElementById('catalogEditorArea');
+  if(!catalogState.length){
+    area.innerHTML = '<div class="hint">هنوز دسته‌ای اضافه نشده. روی «افزودن دسته جدید» بزن.</div>';
+    return;
+  }
+  area.innerHTML = catalogState.map((sec, ci) => `
+    <div class="cat">
+      <div class="cat-head">
+        <input value="${sec.cat}" onchange="updateCatalogCatName(${ci}, this.value)">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <div class="move-btns">
+            <button onclick="moveCatalogCategory(${ci},-1)" ${ci===0?'disabled':''}>▲</button>
+            <button onclick="moveCatalogCategory(${ci},1)" ${ci===catalogState.length-1?'disabled':''}>▼</button>
+          </div>
+          <button onclick="removeCatalogCategory(${ci})" style="background:rgba(255,255,255,.15); color:#fff; border:none; border-radius:8px; padding:5px 8px; cursor:pointer;">حذف دسته</button>
+        </div>
+      </div>
+      ${sec.items.map((it, ii) => `
+        <div class="prod-block">
+          <div class="prod-top">
+            <input class="n" value="${it.n||''}" placeholder="نام محصول" onchange="updateCatalogField(${ci},${ii},'n',this.value)">
+            <input class="d" value="${it.d||''}" placeholder="سایز/ابعاد" onchange="updateCatalogField(${ci},${ii},'d',this.value)">
+            <div class="move-btns">
+              <button onclick="moveCatalogItem(${ci},${ii},-1)" ${ii===0?'disabled':''}>▲</button>
+              <button onclick="moveCatalogItem(${ci},${ii},1)" ${ii===sec.items.length-1?'disabled':''}>▼</button>
+            </div>
+            <button onclick="removeCatalogItem(${ci},${ii})">✕</button>
+          </div>
+          <textarea class="prod-desc" placeholder="توضیحات محصول" onchange="updateCatalogField(${ci},${ii},'desc',this.value)">${it.desc||''}</textarea>
+          <div class="sizes-wrap">
+            <div class="sizes-label">جدول قیمت بر اساس سایز دیوار</div>
+            ${(it.sizes||[]).map((sz,si)=>`
+              <div class="size-row">
+                <input value="${sz.size||''}" placeholder="سایز (مثلاً ۲ متر)" onchange="updateCatalogSize(${ci},${ii},${si},'size',this.value)">
+                <input class="size-price" type="number" value="${sz.price||''}" placeholder="قیمت" onchange="updateCatalogSize(${ci},${ii},${si},'price',this.value)">
+                <button onclick="removeCatalogSize(${ci},${ii},${si})">✕</button>
+              </div>
+            `).join('')}
+            <button class="addSize" onclick="addCatalogSize(${ci},${ii})">+ افزودن ردیف سایز/قیمت</button>
+          </div>
+          <div class="thumbs" id="thumbs-${ci}-${ii}">
+            ${(it.imgs||[]).map((src,imi)=>`
+              <div class="thumb"><img src="${src}"><button onclick="removeCatalogImg(${ci},${ii},${imi})">✕</button></div>
+            `).join('')}
+          </div>
+          <label class="upload-btn">+ افزودن عکس
+            <input type="file" accept="image/*" multiple onchange="uploadCatalogImgs(${ci},${ii}, this.files)">
+          </label>
+          <span id="uploadStatus-${ci}-${ii}" style="font-size:.72rem; color:var(--muted); margin-right:6px;"></span>
+        </div>
+      `).join('')}
+      <button class="addItem" onclick="addCatalogItem(${ci})">+ افزودن محصول</button>
+    </div>
+  `).join('');
+}
+
+window.updateCatalogCatName = (ci, val) => { catalogState[ci].cat = val; };
+window.updateCatalogField = (ci, ii, field, val) => { catalogState[ci].items[ii][field] = val; };
+window.removeCatalogItem = (ci, ii) => { catalogState[ci].items.splice(ii,1); renderCatalog(); };
+window.removeCatalogCategory = (ci) => { if(confirm('این دسته حذف بشه؟')){ catalogState.splice(ci,1); renderCatalog(); } };
+window.addCatalogItem = (ci) => { catalogState[ci].items.push({n:'محصول جدید', d:'', desc:'', imgs:[], sizes:[]}); renderCatalog(); };
+window.addCatalogSize = (ci, ii) => {
+  if(!catalogState[ci].items[ii].sizes) catalogState[ci].items[ii].sizes = [];
+  catalogState[ci].items[ii].sizes.push({size:'', price:''});
+  renderCatalog();
+};
+window.updateCatalogSize = (ci, ii, si, field, val) => {
+  catalogState[ci].items[ii].sizes[si][field] = field==='price' ? Number(val) : val;
+};
+window.removeCatalogSize = (ci, ii, si) => { catalogState[ci].items[ii].sizes.splice(si,1); renderCatalog(); };
+window.addCatalogCategory = () => { catalogState.push({cat:'دسته جدید', items:[]}); renderCatalog(); };
+window.removeCatalogImg = (ci, ii, imi) => { catalogState[ci].items[ii].imgs.splice(imi,1); renderCatalog(); };
+window.moveCatalogCategory = (ci, dir) => {
+  const ni = ci + dir;
+  if(ni < 0 || ni >= catalogState.length) return;
+  [catalogState[ci], catalogState[ni]] = [catalogState[ni], catalogState[ci]];
+  renderCatalog();
+};
+window.moveCatalogItem = (ci, ii, dir) => {
+  const items = catalogState[ci].items;
+  const ni = ii + dir;
+  if(ni < 0 || ni >= items.length) return;
+  [items[ii], items[ni]] = [items[ni], items[ii]];
+  renderCatalog();
+};
+
+window.uploadCatalogImgs = async function(ci, ii, files){
+  const statusEl = document.getElementById(`uploadStatus-${ci}-${ii}`);
+  if(!catalogState[ci].items[ii].imgs) catalogState[ci].items[ii].imgs = [];
+  let done = 0;
+  statusEl.textContent = `در حال آپلود 0/${files.length}...`;
+  for(const file of files){
+    try{
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('upload_preset', UPLOAD_PRESET);
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method:'POST', body: fd });
+      const data = await res.json();
+      if(data.secure_url){
+        catalogState[ci].items[ii].imgs.push(data.secure_url);
+      }
+      done++;
+      statusEl.textContent = `در حال آپلود ${done}/${files.length}...`;
+    }catch(e){
+      statusEl.textContent = 'خطا در آپلود عکس';
+    }
+  }
+  statusEl.textContent = '';
+  renderCatalog();
+};
+
+window.saveCatalog = async function(){
+  const statusEl = document.getElementById('catalogStatusMsg');
+  statusEl.textContent = 'در حال ذخیره...'; statusEl.className='status';
+  try{
+    const { error } = await supabase.from('catalog_products').update({ categories: catalogState, updated_at: new Date().toISOString() }).eq('id','main');
+    if(error) throw error;
+    statusEl.textContent = 'ذخیره شد ✓'; statusEl.className='status ok';
+  }catch(e){
+    statusEl.textContent = 'خطا در ذخیره: ' + e.message; statusEl.className='status err';
+  }
+};
+</script>
+</body>
+</html>
