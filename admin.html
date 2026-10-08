@@ -35,14 +35,19 @@
   .prod-block{padding:10px; border-bottom:1px solid var(--line);}
   .prod-block:last-child{border-bottom:none;}
   .sizes-wrap{background:#fbfaf7; border:1px solid var(--line); border-radius:10px; padding:8px; margin-bottom:6px;}
-  .sizes-label{font-size:.72rem; font-weight:800; color:var(--navy); margin-bottom:6px;}
-  .size-row{display:flex; gap:6px; align-items:center; margin-bottom:5px;}
-  .size-row input{flex:1; border:1px solid var(--line); border-radius:8px; padding:6px 8px; font-family:inherit; font-size:.78rem; background:#fff;}
-  .size-row input.size-price{flex:1.1; text-align:center;}
-  .size-row input.size-qty{flex:1.1; text-align:center; background:#fff7e6 !important; border-color:var(--gold) !important;}
-  .qty-note{font-size:.65rem; color:var(--muted); margin:-2px 0 6px; padding:0 2px;}
-  .size-row button{border:none; background:#fdeaea; color:#c0392b; border-radius:8px; padding:5px 7px; cursor:pointer; font-size:.78rem;}
-  .addSize{width:100%; padding:6px; border:1px dashed var(--gold); background:#fffdf7; color:var(--navy); border-radius:8px; font-family:inherit; font-weight:700; cursor:pointer; font-size:.72rem;}
+  .sizes-label{font-size:.72rem; font-weight:800; color:var(--navy); margin-bottom:8px;}
+  .size-card{background:#fff; border:1px solid var(--line); border-radius:10px; padding:8px; margin-bottom:8px;}
+  .size-card-top{display:flex; gap:6px; align-items:center; margin-bottom:7px;}
+  .size-card-top input{flex:1; min-width:0; border:1px solid var(--line); border-radius:8px; padding:7px 9px; font-family:inherit; font-size:.82rem; background:#fbfaf7; font-weight:700;}
+  .size-card-top button{flex:none; border:none; background:#fdeaea; color:#c0392b; border-radius:8px; width:30px; height:30px; cursor:pointer; font-size:.8rem;}
+  .size-card-grid{display:grid; grid-template-columns:1fr 1fr; gap:7px;}
+  .size-field label{display:block; font-size:.65rem; color:var(--muted); font-weight:700; margin-bottom:3px;}
+  .size-field input{width:100%; min-width:0; border:1px solid var(--line); border-radius:8px; padding:7px 8px; font-family:inherit; font-size:.8rem; background:#fff; box-sizing:border-box;}
+  .size-field.qty-field{background:#fff8e6; border:1px solid var(--gold); border-radius:8px; padding:5px 6px;}
+  .size-field.qty-field label{color:#8a6d1f;}
+  .size-field.qty-field input{background:#fffdf5; border-color:#e8c874;}
+  .qty-note{font-size:.68rem; color:var(--muted); margin:2px 0 8px; padding:0 2px; line-height:1.7;}
+  .addSize{width:100%; padding:9px; border:1px dashed var(--gold); background:#fffdf7; color:var(--navy); border-radius:9px; font-family:inherit; font-weight:700; cursor:pointer; font-size:.78rem;}
   .prod-top{display:flex; gap:8px; margin-bottom:6px;}
   .prod-top input{flex:1;}
   .prod-desc{width:100%; margin-bottom:6px; min-height:44px; resize:vertical;}
@@ -303,14 +308,24 @@ function renderCatalog(){
           <div class="sizes-wrap">
             <div class="sizes-label">جدول قیمت بر اساس سایز دیوار</div>
             ${(it.sizes||[]).map((sz,si)=>`
-              <div class="size-row">
-                <input value="${sz.size||''}" placeholder="سایز (مثلاً ۲ متر)" onchange="updateCatalogSize(${ci},${ii},${si},'size',this.value)">
-                <input class="size-price" type="number" value="${sz.price||''}" placeholder="قیمت" onchange="updateCatalogSize(${ci},${ii},${si},'price',this.value)">
-                <input class="size-qty" value="${sz.qty||''}" placeholder="مقدار جنس مصرفی" onchange="updateCatalogSize(${ci},${ii},${si},'qty',this.value)">
-                <button onclick="removeCatalogSize(${ci},${ii},${si})">✕</button>
+              <div class="size-card">
+                <div class="size-card-top">
+                  <input value="${sz.size||''}" placeholder="سایز (مثلاً دیوار عرض ۲ متر)" onchange="updateCatalogSize(${ci},${ii},${si},'size',this.value)">
+                  <button onclick="removeCatalogSize(${ci},${ii},${si})">✕</button>
+                </div>
+                <div class="size-card-grid">
+                  <div class="size-field">
+                    <label>قیمت (تومان)</label>
+                    <input type="number" value="${sz.price||''}" placeholder="مثلاً 15000000" onchange="updateCatalogSize(${ci},${ii},${si},'price',this.value)">
+                  </div>
+                  <div class="size-field qty-field">
+                    <label>🔒 مقدار جنس مصرفی</label>
+                    <input value="${sz.qty||''}" placeholder="مثلاً ۵ تا ترموال" onchange="updateCatalogSize(${ci},${ii},${si},'qty',this.value)">
+                  </div>
+                </div>
               </div>
             `).join('')}
-            <div class="qty-note">🔒 ستون زرد (مقدار جنس مصرفی) فقط تو پنل مدیریت دیده میشه، تو سایت عمومی نمایش داده نمیشه</div>
+            <div class="qty-note">🔒 فیلد زرد (مقدار جنس مصرفی) فقط تو پنل مدیریت دیده میشه، تو سایت عمومی نمایش داده نمیشه</div>
             <button class="addSize" onclick="addCatalogSize(${ci},${ii})">+ افزودن ردیف سایز/قیمت</button>
           </div>
           <div class="thumbs" id="thumbs-${ci}-${ii}">
